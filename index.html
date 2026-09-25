@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI';
+    background: #0f172a;
+    color: white;
+}
+
+/* Navbar */
+.navbar {
+    background: #020617;
+    padding: 15px;
+    text-align: center;
+    font-size: 22px;
+}
+
+/* Cards */
+.dashboard {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    margin: 20px;
+}
+
+.card {
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 12px;
+    width: 220px;
+    text-align: center;
+}
+
+/* 🔴 LIVE ALERT */
+.blink {
+    animation: blink 1s infinite;
+    color: red;
+    text-align: center;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+/* Graph */
+.chart-box {
+    width: 80%;
+    margin: auto;
+    background: #1e293b;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+/* Map */
+.map {
+    text-align: center;
+    margin: 20px;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="navbar">🔐 Cyber Dashboard</div>
+
+{% if stats.failed > 3 %}
+<div class="blink">⚠️ LIVE ATTACK DETECTED ⚠️</div>
+{% endif %}
+
+<!-- Cards -->
+<div class="dashboard">
+    <div class="card">Total<br>{{ stats.total }}</div>
+    <div class="card">Failed<br>{{ stats.failed }}</div>
+    <div class="card">Blocked<br>{{ stats.blocked }}</div>
+</div>
+
+<!-- 📊 GRAPH -->
+<div class="chart-box">
+    <canvas id="myChart"></canvas>
+</div>
+
+<!-- 🌍 MAP -->
+<div class="map">
+    <iframe 
+        src="https://maps.google.com/maps?q={{ stats.top_ip }}&output=embed"
+        width="80%" height="300">
+    </iframe>
+</div>
+
+<script>
+const ctx = document.getElementById('myChart');
+
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: ['Total', 'Failed', 'Blocked'],
+        datasets: [{
+            label: 'Cyber Stats',
+            data: [{{ stats.total }}, {{ stats.failed }}, {{ stats.blocked }}],
+        }]
+    }
+});
+
+// 🔔 Notification
+if ({{ stats.failed }} > 3) {
+    alert("⚠️ High Threat Detected!");
+}
+</script>
+
+</body>
+</html>
